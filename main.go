@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -9,8 +10,9 @@ import (
 )
 
 func main() {
+	server1 := NewServer(Config{})
+
 	go func() {
-		server1 := NewServer(Config{})
 		log.Fatal(server1.Start())
 	}()
 
@@ -22,5 +24,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	select {}
+	time.Sleep(time.Second)
+	fmt.Println(server1.kv.data)
+
 }
