@@ -14,10 +14,10 @@ func TestParseCommad(t *testing.T) {
 
 	expected := SetCommand{
 		Key: "foo",
-		Val: "bar",
+		Val: []byte("bar"),
 	}
 
-	if cmd != expected {
+	if cmd.(SetCommand).Key != expected.Key || string(cmd.(SetCommand).Val) != string(expected.Val) {
 		t.Errorf("expected %s, got %s\n", expected, cmd)
 	}
 

@@ -18,7 +18,7 @@ type Command interface {
 
 type SetCommand struct {
 	Key string
-	Val string
+	Val []byte
 }
 
 func ParseCommand(raw string) (Command, error) {
@@ -54,7 +54,7 @@ func parseSetCommand(array []resp.Value) (Command, error) {
 	}
 	cmd := SetCommand{
 		Key: array[1].String(),
-		Val: array[2].String(),
+		Val: array[2].Bytes(),
 	}
 	return cmd, nil
 }
