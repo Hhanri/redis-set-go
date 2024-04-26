@@ -53,12 +53,7 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handleMessage(msg Message) error {
-	cmd, err := protocol.ParseCommand(string(msg.data))
-	if err != nil {
-		return err
-	}
-
-	switch v := cmd.(type) {
+	switch v := msg.cmd.(type) {
 	case protocol.SetCommand:
 		return s.kv.Set(v.Key, v.Val)
 	case protocol.GetCommand:

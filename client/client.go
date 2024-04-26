@@ -55,7 +55,7 @@ func (c *Client) Get(ctx context.Context, key string) ([]byte, error) {
 		return nil, err
 	}
 
-	rBuff := make([]byte, 35)
+	rBuff := make([]byte, 1024)
 	n, err := c.conn.Read(rBuff)
 	return rBuff[:n], err
 }

@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -26,8 +25,8 @@ type GetCommand struct {
 	Key string
 }
 
-func ParseCommand(raw string) (Command, error) {
-	rd := resp.NewReader(bytes.NewBufferString(raw))
+func parseCommand(r io.Reader, onCommand func(Command)) error {
+	rd := resp.NewReader(r)
 	for {
 		v, _, err := rd.ReadValue()
 		if err == io.EOF {
@@ -40,19 +39,33 @@ func ParseCommand(raw string) (Command, error) {
 
 		if v.Type() == resp.Array {
 			for i, value := range v.Array() {
+
+				var cmd Command
+				var err error
+
 				switch value.String() {
 				case CommandSET:
-					return parseSetCommand(v.Array())
+					cmd, err = parseSetCommand(v.Array())
+
 				case CommandGET:
-					return parseGetCommand(v.Array())
+					cmd, err = parseGetCommand(v.Array())
 				}
+
+				if err != nil {
+					return err
+				}
+
+				onCommand(cmd)
 
 				fmt.Printf("  #%d %s, value '%s'\n", i, value.Type(), value)
 			}
 		}
 	}
+	return nil
+}
 
-	return nil, fmt.Errorf("Invalid command received: %s\n", raw)
+func HandleCommand(r io.Reader, onCommand func(Command)) error {
+	return parseCommand(r, onCommand)
 }
 
 func parseSetCommand(array []resp.Value) (Command, error) {

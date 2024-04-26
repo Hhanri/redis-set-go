@@ -1,6 +1,8 @@
 package main
 
+import "github.com/Hhanri/redis-set-go/protocol"
+
 type Message struct {
-	data []byte
+	cmd  protocol.Command
 	peer *Peer
 }

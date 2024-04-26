@@ -2,6 +2,8 @@ package main
 
 import (
 	"net"
+
+	"github.com/Hhanri/redis-set-go/protocol"
 )
 
 type Peer struct {
@@ -21,18 +23,15 @@ func (p *Peer) Send(msg []byte) (int, error) {
 }
 
 func (p *Peer) readLoop() error {
-	buff := make([]byte, 1024)
 	for {
-		n, err := p.conn.Read(buff)
+		err := protocol.HandleCommand(p.conn, func(cmd protocol.Command) {
+			p.msgCh <- Message{
+				cmd:  cmd,
+				peer: p,
+			}
+		})
 		if err != nil {
 			return err
-		}
-
-		msgBuff := make([]byte, n)
-		copy(msgBuff, buff[:n])
-		p.msgCh <- Message{
-			data: msgBuff,
-			peer: p,
 		}
 	}
 }
