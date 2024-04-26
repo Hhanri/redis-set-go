@@ -28,6 +28,15 @@ func main() {
 		); err != nil {
 			log.Fatal(err)
 		}
+
+		b, err := client1.Get(
+			context.Background(),
+			fmt.Sprintf("foo_%d", i),
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(b)
 	}
 
 	time.Sleep(time.Second * 3)
