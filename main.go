@@ -18,7 +18,10 @@ func main() {
 
 	time.Sleep(time.Second)
 
-	client1 := client.New("localhost:5001")
+	client1, err := client.New("localhost:5001")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for i := 0; i < 10; i++ {
 		if err := client1.Set(

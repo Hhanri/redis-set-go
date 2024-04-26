@@ -3,7 +3,6 @@ package client
 import (
 	"bytes"
 	"context"
-	"log"
 	"net"
 
 	"github.com/Hhanri/redis-set-go/protocol"
@@ -15,15 +14,15 @@ type Client struct {
 	conn net.Conn
 }
 
-func New(addr string) *Client {
+func New(addr string) (*Client, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return &Client{
 		addr: addr,
 		conn: conn,
-	}
+	}, nil
 }
 
 func (c *Client) Set(ctx context.Context, key string, val string) error {
