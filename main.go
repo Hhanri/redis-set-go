@@ -20,11 +20,17 @@ func main() {
 
 	client1 := client.New("localhost:5001")
 
-	if err := client1.Set(context.Background(), "foo", "bar"); err != nil {
-		log.Fatal(err)
+	for i := 0; i < 10; i++ {
+		if err := client1.Set(
+			context.Background(),
+			fmt.Sprintf("foo_%d", i),
+			fmt.Sprintf("bar_%d", i),
+		); err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Second * 3)
 	fmt.Println(server1.kv.data)
 
 }
