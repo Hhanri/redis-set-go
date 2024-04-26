@@ -1,4 +1,4 @@
-package main
+package protocol
 
 import (
 	"bytes"
@@ -17,10 +17,11 @@ type Command interface {
 }
 
 type SetCommand struct {
-	key, val string
+	Key string
+	Val string
 }
 
-func parseCommand(raw string) (Command, error) {
+func ParseCommand(raw string) (Command, error) {
 	rd := resp.NewReader(bytes.NewBufferString(raw))
 	for {
 		v, _, err := rd.ReadValue()
@@ -52,8 +53,8 @@ func parseSetCommand(array []resp.Value) (Command, error) {
 		return nil, fmt.Errorf("invalid number of variables for SET command")
 	}
 	cmd := SetCommand{
-		key: array[1].String(),
-		val: array[2].String(),
+		Key: array[1].String(),
+		Val: array[2].String(),
 	}
 	return cmd, nil
 }

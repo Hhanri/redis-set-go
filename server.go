@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 
+	"github.com/Hhanri/redis-set-go/protocol"
 	"golang.org/x/exp/slog"
 )
 
@@ -48,14 +49,14 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handleRawMessage(rawMsg []byte) error {
-	cmd, err := parseCommand(string(rawMsg))
+	cmd, err := protocol.ParseCommand(string(rawMsg))
 	if err != nil {
 		return err
 	}
 
 	switch v := cmd.(type) {
-	case SetCommand:
-		slog.Info("set key in hashtable", "key", v.key, "value", v.val)
+	case protocol.SetCommand:
+		slog.Info("set key in hashtable", "key", v.Key, "value", v.Val)
 	}
 	return nil
 }
