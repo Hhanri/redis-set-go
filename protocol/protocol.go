@@ -91,12 +91,13 @@ func parseGetCommand(array []resp.Value) (Command, error) {
 	return cmd, nil
 }
 
-func respWriteMap(m map[string]string) string {
-	buff := bytes.Buffer{}
+func RespWriteMap(m map[string]string) []byte {
+	buff := &bytes.Buffer{}
 	buff.WriteString("%" + fmt.Sprintf("%d\r\n", len(m)))
+	rw := resp.NewWriter(buff)
 	for k, v := range m {
-		buff.WriteString(fmt.Sprintf("+%s\r\n", k))
-		buff.WriteString(fmt.Sprintf(":%s\r\n", v))
+		rw.WriteString(k)
+		rw.WriteString(":" + v)
 	}
-	return buff.String()
+	return buff.Bytes()
 }
