@@ -25,11 +25,12 @@ type GetCommand struct {
 	Key string
 }
 
-func parseCommand(r io.Reader, onCommand func(Command)) error {
+func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
 	rd := resp.NewReader(r)
 	for {
 		v, _, err := rd.ReadValue()
 		if err == io.EOF {
+			onDone()
 			break
 		}
 
@@ -64,8 +65,8 @@ func parseCommand(r io.Reader, onCommand func(Command)) error {
 	return nil
 }
 
-func HandleCommand(r io.Reader, onCommand func(Command)) error {
-	return parseCommand(r, onCommand)
+func HandleCommand(r io.Reader, onCommand func(Command), onDone func()) error {
+	return parseCommand(r, onCommand, onDone)
 }
 
 func parseSetCommand(array []resp.Value) (Command, error) {
