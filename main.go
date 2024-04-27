@@ -1,17 +1,14 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"flag"
 	"log"
-	"time"
-
-	"github.com/Hhanri/redis-set-go/client"
 )
 
 func main() {
-	server1 := NewServer(Config{})
+	listenAddr := flag.String("listenAddr", defaultListenAddr, "listen address of the redis-set-go server")
 
+<<<<<<< Updated upstream
 	go func() {
 		log.Fatal(server1.Start())
 	}()
@@ -41,5 +38,13 @@ func main() {
 
 	time.Sleep(time.Second * 3)
 	fmt.Println(server1.kv.data)
+=======
+	server := NewServer(
+		Config{
+			ListenAddr: *listenAddr,
+		},
+	)
+>>>>>>> Stashed changes
 
+	log.Fatal(server.Start())
 }
