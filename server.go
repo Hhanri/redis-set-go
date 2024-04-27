@@ -78,7 +78,7 @@ func (s *Server) handleMessage(msg Message) error {
 			"mode":    "standalone",
 			"role":    "master",
 		}
-		if err := protocol.RespWriteMap(msg.peer.conn, spec); err != nil {
+		if _, err := msg.peer.Send(protocol.RespParseMap(spec)); err != nil {
 			return fmt.Errorf("Peer send error: %s\n", err)
 		}
 		return nil

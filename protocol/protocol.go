@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	CommandSET    = "SET"
-	CommandGET    = "GET"
+	CommandSET    = "set"
+	CommandGET    = "get"
 	CommandHello  = "hello"
 	CommandClient = "client"
 )
@@ -133,7 +133,7 @@ func RespWriteOK(p io.Writer) error {
 }
 
 func RespWriteString(p io.Writer, s string) error {
-	return RespWriteBytes(p, []byte(s))
+	return resp.NewWriter(p).WriteString(s)
 }
 
 func RespWriteBytes(p io.Writer, b []byte) error {
