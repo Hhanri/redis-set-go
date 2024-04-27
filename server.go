@@ -65,9 +65,21 @@ func (s *Server) handleMessage(msg Message) error {
 		}
 		_, err := msg.peer.Send(val)
 		if err != nil {
-			slog.Error("Peer send error", "err", err)
-			return err
+			return fmt.Errorf("Peer send error: %s\n", err)
 		}
+	case protocol.HelloCommand:
+		spec := map[string]string{
+			"server":  "redis-set-go",
+			"version": "6.0.0",
+			"proto":   "3",
+			"mode":    "standalone",
+			"role":    "master",
+		}
+		_, err := msg.peer.Send(protocol.RespWriteMap(spec))
+		if err != nil {
+			return fmt.Errorf("Peer send error: %s\n", err)
+		}
+		return nil
 	}
 	return nil
 }

@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	CommandSET = "SET"
-	CommandGET = "GET"
+	CommandSET   = "SET"
+	CommandGET   = "GET"
+	CommandHello = "hello"
 )
 
 type Command interface {
@@ -24,6 +25,10 @@ type SetCommand struct {
 
 type GetCommand struct {
 	Key string
+}
+
+type HelloCommand struct {
+	Value string
 }
 
 func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
@@ -48,9 +53,10 @@ func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
 				switch value.String() {
 				case CommandSET:
 					cmd, err = parseSetCommand(v.Array())
-
 				case CommandGET:
 					cmd, err = parseGetCommand(v.Array())
+				case CommandHello:
+					cmd, err = parseHelloCommand(v.Array())
 				}
 
 				if err != nil {
@@ -89,6 +95,12 @@ func parseGetCommand(array []resp.Value) (Command, error) {
 		Key: array[1].String(),
 	}
 	return cmd, nil
+}
+
+func parseHelloCommand(array []resp.Value) (Command, error) {
+	return HelloCommand{
+		Value: array[1].String(),
+	}, nil
 }
 
 func RespWriteMap(m map[string]string) []byte {
