@@ -59,3 +59,7 @@ func (c *Client) Get(ctx context.Context, key string) ([]byte, error) {
 	n, err := c.conn.Read(rBuff)
 	return rBuff[:n], err
 }
+
+func (c *Client) Close() error {
+	return c.conn.Close()
+}
