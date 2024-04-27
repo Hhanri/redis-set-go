@@ -58,7 +58,10 @@ func (s *Server) Start() error {
 func (s *Server) handleMessage(msg Message) error {
 	switch v := msg.cmd.(type) {
 	case protocol.SetCommand:
-		return s.kv.Set(v.Key, v.Val)
+		if err := s.kv.Set(v.Key, v.Val); err != nil {
+			return err
+		}
+		return protocol.RespWriteOK(msg.peer.conn)
 	case protocol.GetCommand:
 		val, ok := s.kv.Get(v.Key)
 		if !ok {

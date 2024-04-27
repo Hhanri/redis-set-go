@@ -109,3 +109,7 @@ func RespWriteMap(m map[string]string) []byte {
 	}
 	return buff.Bytes()
 }
+
+func RespWriteOK(p io.Writer) error {
+	return resp.NewWriter(p).WriteString("OK")
+}
