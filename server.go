@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 
 	"github.com/Hhanri/redis-set-go/protocol"
@@ -119,7 +120,7 @@ func (s *Server) handleConn(conn net.Conn) {
 	peer := NewPeer(conn, s.msgCh, s.delPeerCh)
 	s.addPeerCh <- peer
 
-	if err := peer.readLoop(); err != nil {
+	if err := peer.readLoop(); err != nil && err != io.EOF {
 		slog.Error("peer read error", "err", err, "remoteAddr", conn.RemoteAddr())
 	}
 }

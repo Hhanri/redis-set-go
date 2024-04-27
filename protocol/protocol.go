@@ -37,7 +37,7 @@ func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
 		v, _, err := rd.ReadValue()
 		if err == io.EOF {
 			onDone()
-			break
+			return io.EOF
 		}
 
 		if err != nil {
@@ -66,7 +66,6 @@ func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
 			onCommand(cmd)
 		}
 	}
-	return nil
 }
 
 func HandleCommand(r io.Reader, onCommand func(Command), onDone func()) error {

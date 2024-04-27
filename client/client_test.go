@@ -32,6 +32,8 @@ func TestNewClient(t *testing.T) {
 		}
 		fmt.Println(string(b))
 	}
+
+	client1.Close()
 }
 
 func TestMultipleClients(t *testing.T) {
