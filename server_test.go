@@ -9,7 +9,54 @@ import (
 	"time"
 
 	"github.com/Hhanri/redis-set-go/client"
+	"github.com/redis/go-redis/v9"
 )
+
+func TestOfficialRedisClient(t *testing.T) {
+	listenAddr := ":5001"
+
+	server := NewServer(
+		Config{
+			ListenAddr: listenAddr,
+		},
+	)
+
+	go func() {
+		log.Fatal(server.Start())
+	}()
+
+	time.Sleep(time.Second)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("localhost%s", listenAddr),
+		Password: "",
+		DB:       0,
+	})
+
+	testCases := map[string]string{
+		"foo":    "bar",
+		"foofoo": "barbar",
+		"key":    "val",
+	}
+
+	for key, val := range testCases {
+
+		if err := rdb.Set(context.Background(), key, val, 0).Err(); err != nil {
+			t.Fatal(err)
+		}
+
+		out, err := rdb.Get(context.Background(), key).Result()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if val != out {
+			t.Errorf("Expected %s, got %s", val, out)
+		}
+
+	}
+
+}
 
 func TestServerWithMultiClients(t *testing.T) {
 
