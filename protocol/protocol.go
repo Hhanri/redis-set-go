@@ -1,6 +1,7 @@
 package protocol
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -88,4 +89,14 @@ func parseGetCommand(array []resp.Value) (Command, error) {
 		Key: array[1].String(),
 	}
 	return cmd, nil
+}
+
+func respWriteMap(m map[string]string) string {
+	buff := bytes.Buffer{}
+	buff.WriteString("%" + fmt.Sprintf("%d\r\n", len(m)))
+	for k, v := range m {
+		buff.WriteString(fmt.Sprintf("+%s\r\n", k))
+		buff.WriteString(fmt.Sprintf(":%s\r\n", v))
+	}
+	return buff.String()
 }
