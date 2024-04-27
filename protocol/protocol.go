@@ -112,7 +112,11 @@ func parseClientCommand(array []resp.Value) (Command, error) {
 	}, nil
 }
 
-func RespWriteMap(m map[string]string) []byte {
+func RespWriteMap(p io.Writer, m map[string]string) error {
+	return resp.NewWriter(p).WriteBytes(RespParseMap(m))
+}
+
+func RespParseMap(m map[string]string) []byte {
 	buff := &bytes.Buffer{}
 	buff.WriteString("%" + fmt.Sprintf("%d\r\n", len(m)))
 	rw := resp.NewWriter(buff)
@@ -121,8 +125,17 @@ func RespWriteMap(m map[string]string) []byte {
 		rw.WriteString(":" + v)
 	}
 	return buff.Bytes()
+
 }
 
 func RespWriteOK(p io.Writer) error {
-	return resp.NewWriter(p).WriteString("OK")
+	return RespWriteString(p, "OK")
+}
+
+func RespWriteString(p io.Writer, s string) error {
+	return RespWriteBytes(p, []byte(s))
+}
+
+func RespWriteBytes(p io.Writer, b []byte) error {
+	return resp.NewWriter(p).WriteBytes(b)
 }
