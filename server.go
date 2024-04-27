@@ -84,6 +84,8 @@ func (s *Server) handleMessage(msg Message) error {
 			return fmt.Errorf("Peer send error: %s\n", err)
 		}
 		return nil
+	case protocol.ClientCommand:
+		return protocol.RespWriteOK(msg.peer.conn)
 	}
 	return nil
 }
