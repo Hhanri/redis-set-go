@@ -45,28 +45,25 @@ func parseCommand(r io.Reader, onCommand func(Command), onDone func()) error {
 		}
 
 		if v.Type() == resp.Array {
-			for i, value := range v.Array() {
 
-				var cmd Command
-				var err error
+			var cmd Command
+			var err error
 
-				switch value.String() {
-				case CommandSET:
-					cmd, err = parseSetCommand(v.Array())
-				case CommandGET:
-					cmd, err = parseGetCommand(v.Array())
-				case CommandHello:
-					cmd, err = parseHelloCommand(v.Array())
-				}
-
-				if err != nil {
-					return err
-				}
-
-				onCommand(cmd)
-
-				fmt.Printf("  #%d %s, value '%s'\n", i, value.Type(), value)
+			rawCMD := v.Array()[0].String()
+			switch rawCMD {
+			case CommandSET:
+				cmd, err = parseSetCommand(v.Array())
+			case CommandGET:
+				cmd, err = parseGetCommand(v.Array())
+			case CommandHello:
+				cmd, err = parseHelloCommand(v.Array())
 			}
+
+			if err != nil {
+				return err
+			}
+
+			onCommand(cmd)
 		}
 	}
 	return nil
