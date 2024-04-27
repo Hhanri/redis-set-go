@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 	"testing"
 )
 
@@ -31,4 +32,52 @@ func TestNewClient(t *testing.T) {
 		}
 		fmt.Println(string(b))
 	}
+}
+
+func TestMultipleClients(t *testing.T) {
+
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+
+		go func(n int) {
+
+			client, err := New("localhost:5001")
+			defer func() {
+				client.Close()
+				wg.Done()
+			}()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for ii := 0; ii < 10; ii++ {
+
+				key := fmt.Sprintf("client_%d_foo_%d", n, ii)
+				if err := client.Set(
+					context.Background(),
+					key,
+					fmt.Sprintf("client_%d_bar_%d", n, ii),
+				); err != nil {
+					log.Fatal(err)
+				}
+
+				b, err := client.Get(
+					context.Background(),
+					key,
+				)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fmt.Printf("Client %d go this => %s\n", i, b)
+			}
+
+		}(i)
+
+	}
+
+	wg.Wait()
+
 }
